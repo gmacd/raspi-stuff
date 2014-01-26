@@ -1,14 +1,12 @@
 package main
 
 import (
+	"code.google.com/p/go.net/websocket"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
-}
 
 func stateHandler(w http.ResponseWriter, r *http.Request) {
 	state := NewSystemState()
@@ -18,6 +16,11 @@ func stateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(response)
+}
+
+func wstestHandler(ws *websocket.Conn) {
+	fmt.Println("wot?")
+	ws.Write([]byte("helloooo"))
 }
 
 type SystemState struct {
@@ -33,7 +36,13 @@ func NewSystemState() *SystemState {
 }
 
 func main() {
-	http.HandleFunc("/", handler)
+	port := 8080
+
 	http.HandleFunc("/state", stateHandler)
-	http.ListenAndServe(":8080", nil)
+	http.Handle("/wstest", websocket.Handler(wstestHandler))
+
+	fmt.Println("Listening on port 8080")
+	if err := http.ListenAndServe(":"+strconv.Itoa(port), nil); err != nil {
+		fmt.Println(err.Error())
+	}
 }
