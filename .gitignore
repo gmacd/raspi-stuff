@@ -6,6 +6,8 @@
 # Folders
 _obj
 _test
+raspimonitor_client/packages
+raspimonitor_client/web/packages
 
 # Architecture specific extensions/prefixes
 *.[568vq]
